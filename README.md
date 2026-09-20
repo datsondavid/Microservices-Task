@@ -1,5 +1,5 @@
 # Microservices Task
-=======
+
 # Microservices-Task - Dockerized Submission
 
 Node.js microservices containerized with Docker and orchestrated with Docker Compose.
