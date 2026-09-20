@@ -1,4 +1,4 @@
-# Microservices-Task — Dockerized Submission
+# Microservices-Task - Dockerized Submission
 
 This repo contains four Node.js/Express microservices, each containerized with its own
 `Dockerfile`, and orchestrated together with `docker-compose.yml`.
