@@ -1,15 +1,13 @@
-<<<<<<< HEAD
 # Microservices Task
 =======
 # Microservices-Task - Dockerized Submission
->>>>>>> 62897e09b71f45c1974a6e31f0e943826d2f812c
 
 Node.js microservices containerized with Docker and orchestrated with Docker Compose.
 
 ## Services
 
 | Service | Port | What it does |
-|---|---|---|
+
 | user-service | 3000 | Returns a list of users |
 | product-service | 3001 | Returns a list of products |
 | order-service | 3002 | Create and list orders |
@@ -122,7 +120,6 @@ docker compose logs -f
 
 ## Screenshots
 
-<<<<<<< HEAD
 Building and starting all services:
 
 ![docker compose cli](<screenshots/docker compose cli.png>)
@@ -155,13 +152,6 @@ Stopping the services:
 
 ![docker compose down](<screenshots/docker compose down.png>)
 =======
-> All the screenshots are present in /screenshots
-> - Terminal output of `docker compose up --build` showing all four services starting
-> - `docker compose ps` / `docker ps` showing all containers in the `Up` state
-> - Browser or `curl` output for `http://localhost:3000/users`,
->   `http://localhost:3001/products`, `http://localhost:3002/orders`, and
->   `http://localhost:3003/api/users`
->>>>>>> 62897e09b71f45c1974a6e31f0e943826d2f812c
 
 ## Troubleshooting
 
