@@ -122,7 +122,7 @@ docker compose logs -f
 
 ## Screenshots
 
-> Add screenshots here after running `docker compose up` locally — for example:
+> All the screenshots are present in /screenshots
 > - Terminal output of `docker compose up --build` showing all four services starting
 > - `docker compose ps` / `docker ps` showing all containers in the `Up` state
 > - Browser or `curl` output for `http://localhost:3000/users`,
