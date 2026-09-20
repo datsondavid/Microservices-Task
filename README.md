@@ -1,19 +1,20 @@
-# Microservices-Task — Dockerized Submission
+# Microservices Task
 
-This repo contains four Node.js/Express microservices, each containerized with its own
-`Dockerfile`, and orchestrated together with `docker-compose.yml`.
+Node.js microservices containerized with Docker and orchestrated with Docker Compose.
 
-| Service          | Port | Description                                  |
-|-------------------|------|-----------------------------------------------|
-| user-service      | 3000 | Returns a list of users                       |
-| product-service   | 3001 | Returns a list of products                    |
-| order-service     | 3002 | Create / list orders                          |
-| gateway-service   | 3003 | Aggregates the above services under `/api/*`  |
+## Services
+
+| Service | Port | What it does |
+|---|---|---|
+| user-service | 3000 | Returns a list of users |
+| product-service | 3001 | Returns a list of products |
+| order-service | 3002 | Create and list orders |
+| gateway-service | 3003 | Routes requests to the other three under `/api/*` |
 
 ## Folder Structure
 
 ```
-submission/
+Microservices-Task/
 ├── user-service/
 │   ├── Dockerfile
 │   ├── app.js
@@ -31,90 +32,85 @@ submission/
 │   ├── app.js
 │   └── package.json
 ├── docker-compose.yml
+├── screenshots/
 └── README.md
 ```
 
-## Prerequisites
+## Requirements
 
-- [Docker](https://docs.docker.com/get-docker/) (20.10+)
-- [Docker Compose](https://docs.docker.com/compose/install/) (v2 syntax, bundled with
-  modern Docker Desktop — run as `docker compose`, or install the standalone
-  `docker-compose` binary)
+- Docker (20.10+)
+- Docker Compose (v2, comes with Docker Desktop, run as `docker compose`. The older standalone `docker-compose` binary also works)
 
-## Setup Instructions
+## Setup
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/datsondavid/Microservices-Task.git
-   cd Microservices-Task/submission
-   ```
+Clone the repo and move into it:
 
-2. Build and start all four services:
-   ```bash
-   docker compose up --build
-   ```
-   (or `docker-compose up --build` on older installs)
+```bash
+git clone https://github.com/datsondavid/Microservices-Task.git
+cd Microservices-Task
+```
 
-3. Docker Compose will:
-   - Build an image for each service from its own `Dockerfile`
-   - Start all four containers on a shared bridge network (`microservices-net`),
-     so they can reach each other by service name (e.g. `http://user-service:3000`)
-   - Map each container's port to the same port on your host machine
+Build and start all four services:
 
-4. To run in the background instead:
-   ```bash
-   docker compose up --build -d
-   ```
+```bash
+docker compose up --build
+```
 
-5. To stop everything:
-   ```bash
-   docker compose down
-   ```
+This builds an image for each service from its own Dockerfile, starts all four containers on a shared network called `microservices-net`, and maps each container's port to the same port on your machine. Since they're on the same network, they can talk to each other using their service name, for example the gateway calls `http://user-service:3000` internally.
 
-## How to Test Each Service
+Run in the background instead:
 
-Once `docker compose up` reports all four containers as running, test each one from
-your host machine:
+```bash
+docker compose up --build -d
+```
 
-**User Service**
+Stop everything:
+
+```bash
+docker compose down
+```
+
+## Testing each service
+
+Once all four containers are up, hit them from your host machine.
+
+User service:
 ```bash
 curl http://localhost:3000/health
 curl http://localhost:3000/users
 ```
 
-**Product Service**
+Product service:
 ```bash
 curl http://localhost:3001/health
 curl http://localhost:3001/products
 ```
 
-**Order Service**
+Order service:
 ```bash
 curl http://localhost:3002/health
 curl http://localhost:3002/orders
 
-# Create an order
 curl -X POST http://localhost:3002/orders \
   -H "Content-Type: application/json" \
   -d '{"userId": 1, "productId": 2}'
 ```
 
-**Gateway Service** (routes to the three services above)
+Gateway service (this routes to the other three):
 ```bash
 curl http://localhost:3003/health
 curl http://localhost:3003/api/users
 curl http://localhost:3003/api/products
 curl http://localhost:3003/api/orders
 
-# Create an order through the gateway
 curl -X POST http://localhost:3003/api/orders \
   -H "Content-Type: application/json" \
   -d '{"userId": 1, "productId": 2}'
 ```
 
-You can also open any of the `GET` URLs above directly in a browser.
+Any of the GET routes above also work fine in a browser.
 
-To confirm all four containers are up and healthy:
+To check container status and logs:
 ```bash
 docker compose ps
 docker compose logs -f
@@ -122,53 +118,53 @@ docker compose logs -f
 
 ## Screenshots
 
-> Add screenshots here after running `docker compose up` locally — for example:
-> - Terminal output of `docker compose up --build` showing all four services starting
-> - `docker compose ps` / `docker ps` showing all containers in the `Up` state
-> - Browser or `curl` output for `http://localhost:3000/users`,
->   `http://localhost:3001/products`, `http://localhost:3002/orders`, and
->   `http://localhost:3003/api/users`
+Building and starting all services:
+
+![docker compose cli](<screenshots/docker compose cli.png>)
+
+All containers running:
+
+![docker compose](<screenshots/docker compose.png>)
+
+Docker Desktop showing all containers healthy:
+
+![docker desktop success](<screenshots/docker desktop success.png>)
+
+User service response:
+
+![curl users](<screenshots/curl users.png>)
+
+Product service response:
+
+![curl products](<screenshots/curl products.png>)
+
+Order service response:
+
+![curl orders](<screenshots/curl orders.png>)
+
+Gateway service response:
+
+![curl api users](<screenshots/curl api users.png>)
+
+Stopping the services:
+
+![docker compose down](<screenshots/docker compose down.png>)
 
 ## Troubleshooting
 
-- **Port already in use** (`Bind for 0.0.0.0:3000 failed: port is already allocated`)
-  Something else on your machine is using that port. Stop it, or change the host-side
-  port mapping in `docker-compose.yml` (e.g. `"3010:3000"`), then re-run
-  `docker compose up`.
+**Port already in use.** Something else on your machine is already using that port. Either stop it, or change the host side of the port mapping in `docker-compose.yml`, e.g. `"3010:3000"`, then run `docker compose up` again.
 
-- **Gateway returns `{"error": "Error fetching users"}` (or products/orders)**
-  The gateway couldn't reach the target service over the internal network. Check:
-  - All four containers are running: `docker compose ps`
-  - You didn't rename a service in `docker-compose.yml` — the gateway calls services
-    by their **container/service name** (`user-service`, `product-service`,
-    `order-service`), not `localhost`.
-  - Check that service's logs: `docker compose logs order-service`
+**Gateway returns an error fetching users/products/orders.** This usually means the gateway can't reach the target service over the internal network. Check that all four containers are running with `docker compose ps`, make sure you didn't rename a service in `docker-compose.yml` since the gateway calls services by name (`user-service`, `product-service`, `order-service`), not `localhost`. Check that specific service's logs with `docker compose logs order-service`.
 
-- **Changes to `app.js` aren't showing up**
-  Docker Compose caches built images. Rebuild with:
-  ```bash
-  docker compose up --build
-  ```
-  or force a clean rebuild:
-  ```bash
-  docker compose build --no-cache
-  docker compose up
-  ```
+**Changes to app.js aren't showing up.** Docker Compose caches built images. Rebuild with `docker compose up --build`, or force a clean rebuild with `docker compose build --no-cache` followed by `docker compose up`.
 
-- **`docker compose` command not found**
-  Your Docker install may only support the older standalone `docker-compose` binary.
-  Use `docker-compose up --build` instead, or upgrade Docker Desktop / the Docker CLI
-  plugin.
+**"docker compose" command not found.** Your Docker install might only have the older standalone binary. Use `docker-compose up --build` instead, or update Docker Desktop.
 
-- **Containers exit immediately after starting**
-  Run `docker compose logs <service-name>` to see the error. A common cause is a
-  missing `node_modules` folder if you bind-mounted the source directory over the
-  container's `/app` — this setup does not use bind mounts, so a fresh
-  `docker compose up --build` should always work.
+**Containers exit right after starting.** Run `docker compose logs <service-name>` to see what happened. This setup doesn't use bind mounts, so a fresh `docker compose up --build` should always work.
 
-- **Reset everything and start clean**
-  ```bash
-  docker compose down -v
-  docker system prune -f
-  docker compose up --build
-  ```
+**Start over from scratch:**
+```bash
+docker compose down -v
+docker system prune -f
+docker compose up --build
+```
